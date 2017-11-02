@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 services:
 
@@ -26,6 +26,8 @@ services:
       - ./elasticsearch/config:/usr/share/elasticsearch/config
     ports:
       - "${BIND_IP}:9200:9200"
+    healthcheck:
+        test: curl -fs http://localhost:9200/
     networks:
       - ${NET_NAME}
   
@@ -38,10 +40,13 @@ services:
       - ./kibana/config:/opt/kibana/config
     ports:
       - "${BIND_IP}:5601:5601"
+    healthcheck:
+        test: curl -fs http://localhost:5601/
     networks:
       - ${NET_NAME}
     depends_on:
-      - elasticsearch
+        elasticsearch:
+            condition: service_healthy
 
 volumes:
   esdata:
